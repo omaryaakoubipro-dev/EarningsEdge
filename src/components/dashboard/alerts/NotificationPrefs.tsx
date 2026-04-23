@@ -1,0 +1,137 @@
+'use client';
+
+import { useState } from 'react';
+import { Send, Check, Copy, ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { UserPreferences } from '@/lib/types';
+
+interface Props {
+  prefs: Partial<UserPreferences>;
+  onUpdate: (updates: Partial<UserPreferences>) => Promise<boolean>;
+}
+
+export default function NotificationPrefs({ prefs, onUpdate }: Props) {
+  const [chatId, setChatId] = useState(prefs.telegram_chat_id ?? '');
+  const [telegramEnabled, setTelegramEnabled] = useState(prefs.telegram_enabled ?? false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await onUpdate({
+      telegram_chat_id: chatId || null,
+      telegram_enabled: telegramEnabled,
+    });
+    setSaving(false);
+    if (ok) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+  };
+
+  const BOT_URL = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? 'EarningsEdgeBot'}`;
+
+  return (
+    <div className="space-y-4">
+      <div className="card p-5 space-y-5">
+        <h2 className="font-semibold text-white flex items-center gap-2">
+          <Send className="w-4 h-4 text-accent" />
+          Telegram Alerts
+        </h2>
+
+        {/* Setup instructions */}
+        <div className="bg-bg-secondary rounded-lg p-4 space-y-2 text-sm text-gray-300">
+          <p className="font-medium text-white text-xs uppercase tracking-wide text-gray-400 mb-2">
+            Setup Instructions
+          </p>
+          <ol className="space-y-2 text-sm list-decimal list-inside text-gray-300">
+            <li>
+              <a
+                href={BOT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:text-accent-hover inline-flex items-center gap-1"
+              >
+                Open EarningsEdge Bot <ExternalLink className="w-3 h-3" />
+              </a>
+              {' '}on Telegram
+            </li>
+            <li>Send the bot the message <code className="font-mono text-xs bg-bg-primary px-1.5 py-0.5 rounded">/start</code></li>
+            <li>Copy your Chat ID from the bot's reply</li>
+            <li>Paste it below and save</li>
+          </ol>
+        </div>
+
+        {/* Chat ID input */}
+        <div>
+          <label className="label">Your Telegram Chat ID</label>
+          <input
+            type="text"
+            value={chatId}
+            onChange={(e) => setChatId(e.target.value)}
+            placeholder="e.g. 123456789"
+            className="input font-mono"
+          />
+        </div>
+
+        {/* Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-200">Enable Telegram notifications</p>
+            <p className="text-xs text-gray-500 mt-0.5">Receive alerts when earnings are analyzed</p>
+          </div>
+          <button
+            role="switch"
+            aria-checked={telegramEnabled}
+            onClick={() => setTelegramEnabled(!telegramEnabled)}
+            className={cn(
+              'relative w-10 h-6 rounded-full transition-colors',
+              telegramEnabled ? 'bg-accent' : 'bg-gray-600'
+            )}
+          >
+            <span
+              className={cn(
+                'absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform',
+                telegramEnabled ? 'translate-x-5' : 'translate-x-1'
+              )}
+            />
+          </button>
+        </div>
+
+        {/* Save button */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className={cn('btn-primary w-full flex items-center justify-center gap-2')}
+        >
+          {saved ? (
+            <>
+              <Check className="w-4 h-4" /> Saved
+            </>
+          ) : saving ? (
+            'Saving…'
+          ) : (
+            'Save Preferences'
+          )}
+        </button>
+      </div>
+
+      {/* Bot commands reference */}
+      <div className="card p-4">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Bot Commands</p>
+        <div className="space-y-2">
+          {[
+            { cmd: '/watchlist', desc: 'Show your watchlist' },
+            { cmd: '/next', desc: 'Next upcoming earnings' },
+            { cmd: '/latest', desc: 'Latest analysis' },
+          ].map(({ cmd, desc }) => (
+            <div key={cmd} className="flex items-center justify-between">
+              <code className="font-mono text-xs text-accent">{cmd}</code>
+              <span className="text-xs text-gray-500">{desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

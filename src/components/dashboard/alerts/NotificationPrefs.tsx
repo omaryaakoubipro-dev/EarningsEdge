@@ -85,14 +85,14 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
             aria-checked={telegramEnabled}
             onClick={() => setTelegramEnabled(!telegramEnabled)}
             className={cn(
-              'relative w-10 h-6 rounded-full transition-colors',
+              'relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200',
               telegramEnabled ? 'bg-accent' : 'bg-gray-600'
             )}
           >
             <span
               className={cn(
-                'absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform',
-                telegramEnabled ? 'translate-x-5' : 'translate-x-1'
+                'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200',
+                telegramEnabled ? 'translate-x-6' : 'translate-x-1'
               )}
             />
           </button>

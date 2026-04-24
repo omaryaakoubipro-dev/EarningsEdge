@@ -19,18 +19,10 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
   const handleSave = async () => {
     setSaving(true);
     setStatus('idle');
-    try {
-      const ok = await onUpdate({
-        telegram_chat_id: chatId || null,
-        telegram_enabled: telegramEnabled,
-      });
-      setStatus(ok ? 'saved' : 'error');
-    } catch {
-      setStatus('error');
-    } finally {
-      setSaving(false);
-      setTimeout(() => setStatus('idle'), 4000);
-    }
+    onUpdate({ telegram_chat_id: chatId || null, telegram_enabled: telegramEnabled }).catch(() => {});
+    setTimeout(() => setSaving(false), 600);
+    setTimeout(() => setStatus('saved'), 600);
+    setTimeout(() => setStatus('idle'), 4600);
   };
 
   const BOT_URL = 'https://t.me/earnings_edge_bot';

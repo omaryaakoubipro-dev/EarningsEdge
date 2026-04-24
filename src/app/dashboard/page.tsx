@@ -44,11 +44,7 @@ export default function WatchlistPage() {
     setItems((prev) => {
       const exists = prev.some((i) => i.ticker === newItem.ticker);
       if (exists) return prev;
-      return [newItem, ...prev].sort((a, b) => {
-        if (!a.next_earnings_date) return 1;
-        if (!b.next_earnings_date) return -1;
-        return a.next_earnings_date.localeCompare(b.next_earnings_date);
-      });
+      return [...prev, { ...newItem, last_report_date: null }];
     });
     return true;
   };

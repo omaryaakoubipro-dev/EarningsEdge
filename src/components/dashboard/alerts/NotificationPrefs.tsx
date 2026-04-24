@@ -25,7 +25,7 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
     setSaving(false);
     if (ok) {
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setSaved(false), 4000);
     }
   };
 
@@ -101,12 +101,18 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
         {/* Save button */}
         <button
           onClick={handleSave}
-          disabled={saving}
-          className={cn('btn-primary w-full flex items-center justify-center gap-2')}
+          disabled={saving || saved}
+          className={cn(
+            'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-500',
+            saved
+              ? 'bg-beat/20 text-beat border border-beat/30'
+              : 'btn-primary'
+          )}
         >
           {saved ? (
             <>
-              <Check className="w-4 h-4" /> Saved
+              <Check className="w-4 h-4 animate-[scale-in_0.2s_ease-out]" />
+              Saved — you'll receive alerts on Telegram
             </>
           ) : saving ? (
             'Saving…'

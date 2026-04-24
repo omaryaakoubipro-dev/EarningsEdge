@@ -10,7 +10,7 @@ export async function GET() {
     .from('watchlist')
     .select('*')
     .eq('user_id', OWNER_ID)
-    .order('next_earnings_date', { ascending: true, nullsFirst: false });
+    .order('added_at', { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message, hint: error.hint, details: error.details }, { status: 500 });
 

@@ -26,6 +26,7 @@ export default function HistoryTimeline({ ticker, companyName, analyses }: Props
 
   const beatCount = analyses.filter((a) => a.verdict === 'beat').length;
   const missCount = analyses.filter((a) => a.verdict === 'miss').length;
+  const inlineCount = analyses.filter((a) => a.verdict === 'inline').length;
   const beatRate = Math.round((beatCount / analyses.length) * 100);
 
   return (
@@ -43,10 +44,11 @@ export default function HistoryTimeline({ ticker, companyName, analyses }: Props
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-5">
+        <div className="grid grid-cols-4 gap-4 mb-5">
           {[
             { label: 'Total Reports', value: analyses.length, color: 'text-white' },
             { label: 'Beats', value: beatCount, color: 'text-beat' },
+            { label: 'Inline', value: inlineCount, color: 'text-inline' },
             { label: 'Misses', value: missCount, color: 'text-miss' },
           ].map(({ label, value, color }) => (
             <div key={label} className="text-center">

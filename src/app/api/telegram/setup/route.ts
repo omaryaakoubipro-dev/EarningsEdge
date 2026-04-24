@@ -1,25 +1,19 @@
 import { NextResponse } from 'next/server';
 
-/**
- * GET /api/telegram/setup
- * Visit this URL once in your browser to register the webhook with Telegram.
- * Telegram will then send all bot messages to /api/telegram/webhook automatically.
- */
 export async function GET(req: Request) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) {
-    return NextResponse.json({ error: 'TELEGRAM_BOT_TOKEN not set' }, { status: 500 });
+    return NextResponse.json({ error: 'TELEGRAM_BOT_TOKEN not set in environment variables' }, { status: 500 });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) {
-    return NextResponse.json({ error: 'NEXT_PUBLIC_APP_URL not set — add your Vercel URL to environment variables' }, { status: 500 });
-  }
+  // Auto-detect app URL from the incoming request if env var not set
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')
+    ?? new URL(req.url).origin;
 
   const webhookUrl = `${appUrl}/api/telegram/webhook`;
 
   // Register the webhook with Telegram
-  const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
+  const setRes = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -28,26 +22,21 @@ export async function GET(req: Request) {
       drop_pending_updates: true,
     }),
   });
+  const setData = await setRes.json();
 
-  const data = await res.json();
+  // Get current webhook info to confirm
+  const infoRes = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
+  const infoData = await infoRes.json();
 
-  if (data.ok) {
-    // Also fetch current webhook info to confirm
-    const infoRes = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
-    const info = await infoRes.json();
-
-    return NextResponse.json({
-      success: true,
-      message: `Webhook registered successfully!`,
-      webhookUrl,
-      telegramResponse: data,
-      webhookInfo: info.result,
-    });
-  }
+  // Get bot info to confirm token is valid
+  const meRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+  const meData = await meRes.json();
 
   return NextResponse.json({
-    success: false,
-    error: data.description ?? 'Failed to set webhook',
-    telegramResponse: data,
-  }, { status: 500 });
+    success: setData.ok,
+    webhookUrl,
+    setWebhookResult: setData,
+    webhookInfo: infoData.result,
+    botInfo: meData.result ?? meData,
+  });
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Send, Check, Copy, ExternalLink } from 'lucide-react';
+import { Send, Check, AlertCircle, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { UserPreferences } from '@/lib/types';
 
@@ -14,18 +14,22 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
   const [chatId, setChatId] = useState(prefs.telegram_chat_id ?? '');
   const [telegramEnabled, setTelegramEnabled] = useState(prefs.telegram_enabled ?? false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle');
 
   const handleSave = async () => {
     setSaving(true);
-    const ok = await onUpdate({
-      telegram_chat_id: chatId || null,
-      telegram_enabled: telegramEnabled,
-    });
-    setSaving(false);
-    if (ok) {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 4000);
+    setStatus('idle');
+    try {
+      const ok = await onUpdate({
+        telegram_chat_id: chatId || null,
+        telegram_enabled: telegramEnabled,
+      });
+      setStatus(ok ? 'saved' : 'error');
+    } catch {
+      setStatus('error');
+    } finally {
+      setSaving(false);
+      setTimeout(() => setStatus('idle'), 4000);
     }
   };
 
@@ -101,18 +105,25 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
         {/* Save button */}
         <button
           onClick={handleSave}
-          disabled={saving || saved}
+          disabled={saving || status !== 'idle'}
           className={cn(
             'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 disabled:cursor-not-allowed',
-            saved
+            status === 'saved'
               ? 'bg-beat/20 text-beat border border-beat/40'
+              : status === 'error'
+              ? 'bg-miss/20 text-miss border border-miss/40'
               : 'bg-accent hover:bg-accent-hover text-white disabled:opacity-50'
           )}
         >
-          {saved ? (
+          {status === 'saved' ? (
             <span className="flex items-center gap-2 animate-fade-in">
               <Check className="w-4 h-4" />
               Saved — you'll receive alerts on Telegram
+            </span>
+          ) : status === 'error' ? (
+            <span className="flex items-center gap-2 animate-fade-in">
+              <AlertCircle className="w-4 h-4" />
+              Failed to save — check Vercel logs
             </span>
           ) : saving ? (
             'Saving…'

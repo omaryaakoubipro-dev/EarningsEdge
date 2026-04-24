@@ -96,6 +96,7 @@ export default function EarningsCalendar({ items }: Props) {
                       'text-xs px-1.5 py-0.5 rounded font-mono font-semibold truncate',
                       item.last_verdict === 'beat' ? 'bg-beat/20 text-beat' :
                       item.last_verdict === 'miss' ? 'bg-miss/20 text-miss' :
+                      item.last_verdict === 'inline' ? 'bg-inline/20 text-inline' :
                       'bg-accent/20 text-accent'
                     )}
                     title={item.company_name}
@@ -119,6 +120,9 @@ export default function EarningsCalendar({ items }: Props) {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-miss" /> Miss
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-inline" /> Inline
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-accent" /> Upcoming

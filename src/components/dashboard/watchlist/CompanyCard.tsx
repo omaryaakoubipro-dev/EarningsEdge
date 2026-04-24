@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Trash2, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Trash2, TrendingUp, TrendingDown, Clock, CalendarDays } from 'lucide-react';
 import VerdictBadge from '@/components/ui/Badge';
-import { formatCurrency, formatPercent, daysUntilEarnings } from '@/lib/utils';
+import { formatCurrency, formatPercent, daysUntilEarnings, formatDate } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 import type { WatchlistItem } from '@/lib/types';
 
@@ -90,25 +90,32 @@ export default function CompanyCard({ item, onRemove }: Props) {
           )}
         </div>
 
-        {/* Footer — next earnings */}
-        <div className="flex items-center justify-between pt-4 border-t border-bg-border">
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <Clock className="w-3.5 h-3.5" />
-            <span>
-              {item.next_earnings_date
-                ? `Earnings ${daysLabel}`
-                : 'No earnings date'}
-            </span>
-          </div>
-
-          {item.last_analysis_id && (
-            <Link
-              href={`/analysis/${item.last_analysis_id}`}
-              className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
-            >
-              View analysis →
-            </Link>
+        {/* Footer — earnings dates */}
+        <div className="pt-4 border-t border-bg-border space-y-1.5">
+          {item.last_report_date && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>Last reported: {formatDate(item.last_report_date)}</span>
+            </div>
           )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <CalendarDays className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>
+                {item.next_earnings_date
+                  ? `Next earnings: ${daysLabel}`
+                  : 'Next earnings: TBD'}
+              </span>
+            </div>
+            {item.last_analysis_id && (
+              <Link
+                href={`/analysis/${item.last_analysis_id}`}
+                className="text-xs text-accent hover:text-accent-hover font-medium transition-colors"
+              >
+                View analysis →
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>

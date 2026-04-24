@@ -17,6 +17,7 @@ export interface WatchlistItem {
   price_change_pct: number | null;
   market_cap: number | null;
   next_earnings_date: string | null;
+  last_report_date: string | null;
   last_verdict: Verdict | null;
   last_analysis_id: string | null;
   added_at: string;

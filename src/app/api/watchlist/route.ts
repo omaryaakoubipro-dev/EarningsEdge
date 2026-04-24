@@ -13,7 +13,22 @@ export async function GET() {
     .order('next_earnings_date', { ascending: true, nullsFirst: false });
 
   if (error) return NextResponse.json({ error: error.message, hint: error.hint, details: error.details }, { status: 500 });
-  return NextResponse.json(data ?? []);
+
+  const items = data ?? [];
+  // Enrich with last_report_date from analyses
+  const analysisIds = items.map((w) => w.last_analysis_id).filter(Boolean) as string[];
+  if (analysisIds.length) {
+    const { data: reports } = await supabase
+      .from('earnings_analyses')
+      .select('id, report_date')
+      .in('id', analysisIds);
+    const reportMap = new Map(reports?.map((r) => [r.id, r.report_date]) ?? []);
+    return NextResponse.json(items.map((w) => ({
+      ...w,
+      last_report_date: w.last_analysis_id ? (reportMap.get(w.last_analysis_id) ?? null) : null,
+    })));
+  }
+  return NextResponse.json(items.map((w) => ({ ...w, last_report_date: null })));
 }
 
 export async function POST(req: Request) {

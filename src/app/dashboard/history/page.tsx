@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { OWNER_ID } from '@/lib/owner';
 import HistoryTimeline from '@/components/dashboard/history/HistoryTimeline';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { EarningsAnalysis, WatchlistItem } from '@/lib/types';
@@ -15,22 +13,15 @@ export default function HistoryPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createAdminClient();
-      const wlRes = await fetch('/api/watchlist');
+      const [wlRes, analysesRes] = await Promise.all([
+        fetch('/api/watchlist'),
+        fetch('/api/analyses'),
+      ]);
       const items: WatchlistItem[] = await wlRes.json();
-      setWatchlist(items);
-
-      if (items.length) {
-        const tickers = items.map((i) => i.ticker);
-        const { data } = await supabase
-          .from('earnings_analyses')
-          .select('*')
-          .in('ticker', tickers)
-          .order('report_date', { ascending: false })
-          .limit(100);
-        setAnalyses(data ?? []);
-        setSelectedTicker(items[0].ticker);
-      }
+      const data: EarningsAnalysis[] = await analysesRes.json();
+      setWatchlist(Array.isArray(items) ? items : []);
+      setAnalyses(Array.isArray(data) ? data : []);
+      if (items.length) setSelectedTicker(items[0].ticker);
       setLoading(false);
     }
     load();

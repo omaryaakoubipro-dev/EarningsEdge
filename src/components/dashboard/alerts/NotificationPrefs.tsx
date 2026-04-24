@@ -103,17 +103,17 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
           onClick={handleSave}
           disabled={saving || saved}
           className={cn(
-            'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-500',
+            'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 disabled:cursor-not-allowed',
             saved
-              ? 'bg-beat/20 text-beat border border-beat/30'
-              : 'btn-primary'
+              ? 'bg-beat/20 text-beat border border-beat/40'
+              : 'bg-accent hover:bg-accent-hover text-white disabled:opacity-50'
           )}
         >
           {saved ? (
-            <>
-              <Check className="w-4 h-4 animate-[scale-in_0.2s_ease-out]" />
+            <span className="flex items-center gap-2 animate-fade-in">
+              <Check className="w-4 h-4" />
               Saved — you'll receive alerts on Telegram
-            </>
+            </span>
           ) : saving ? (
             'Saving…'
           ) : (

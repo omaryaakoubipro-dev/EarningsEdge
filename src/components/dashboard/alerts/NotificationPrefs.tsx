@@ -29,7 +29,7 @@ export default function NotificationPrefs({ prefs, onUpdate }: Props) {
     }
   };
 
-  const BOT_URL = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? 'EarningsEdgeBot'}`;
+  const BOT_URL = 'https://t.me/earnings_edge_bot';
 
   return (
     <div className="space-y-4">

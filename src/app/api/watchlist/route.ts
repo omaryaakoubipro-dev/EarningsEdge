@@ -12,8 +12,8 @@ export async function GET() {
     .eq('user_id', OWNER_ID)
     .order('next_earnings_date', { ascending: true, nullsFirst: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  if (error) return NextResponse.json({ error: error.message, hint: error.hint, details: error.details }, { status: 500 });
+  return NextResponse.json(data ?? []);
 }
 
 export async function POST(req: Request) {

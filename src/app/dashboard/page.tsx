@@ -14,8 +14,8 @@ export default function WatchlistPage() {
   const fetchWatchlist = useCallback(async () => {
     try {
       const res = await fetch('/api/watchlist');
-      if (!res.ok) throw new Error('Failed to load watchlist');
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? 'Failed to load watchlist');
       setItems(data);
     } catch (err) {
       setError(String(err));

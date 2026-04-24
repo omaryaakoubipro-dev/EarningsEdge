@@ -1,15 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { TrendingUp, LayoutGrid, Calendar, Clock, Bell, LogOut } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { usePathname } from 'next/navigation';
+import { TrendingUp, LayoutGrid, Calendar, Clock, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { User } from '@supabase/supabase-js';
-
-interface Props {
-  user: User | null;
-}
 
 const NAV_TABS = [
   { href: '/dashboard', label: 'Watchlist', icon: LayoutGrid },
@@ -18,15 +12,8 @@ const NAV_TABS = [
   { href: '/dashboard/alerts', label: 'Alerts', icon: Bell },
 ];
 
-export default function DashboardNav({ user }: Props) {
+export default function DashboardNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/auth/login');
-  };
 
   return (
     <header className="bg-bg-secondary border-b border-bg-border sticky top-0 z-40">
@@ -41,7 +28,7 @@ export default function DashboardNav({ user }: Props) {
           </Link>
 
           {/* Navigation tabs */}
-          <nav className="flex items-center gap-0.5 overflow-x-auto hide-scrollbar">
+          <nav className="flex items-center gap-0.5 overflow-x-auto">
             {NAV_TABS.map(({ href, label, icon: Icon }) => {
               const isActive =
                 href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href);
@@ -61,20 +48,8 @@ export default function DashboardNav({ user }: Props) {
             })}
           </nav>
 
-          {/* User menu */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-xs text-gray-500 hidden md:block max-w-[140px] truncate">
-              {user?.email}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
-              title="Sign out"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Sign out</span>
-            </button>
-          </div>
+          {/* Empty right side for balance */}
+          <div className="w-24" />
         </div>
       </div>
     </header>

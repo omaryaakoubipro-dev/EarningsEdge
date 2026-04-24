@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { OWNER_ID } from '@/lib/owner';
 import HistoryTimeline from '@/components/dashboard/history/HistoryTimeline';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { EarningsAnalysis, WatchlistItem } from '@/lib/types';
@@ -14,12 +15,8 @@ export default function HistoryPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createClient();
-
-      const [wlRes, wlData] = await Promise.all([
-        fetch('/api/watchlist'),
-        fetch('/api/watchlist'),
-      ]);
+      const supabase = createAdminClient();
+      const wlRes = await fetch('/api/watchlist');
       const items: WatchlistItem[] = await wlRes.json();
       setWatchlist(items);
 
@@ -32,7 +29,7 @@ export default function HistoryPage() {
           .order('report_date', { ascending: false })
           .limit(100);
         setAnalyses(data ?? []);
-        if (items.length > 0) setSelectedTicker(items[0].ticker);
+        setSelectedTicker(items[0].ticker);
       }
       setLoading(false);
     }
@@ -47,9 +44,7 @@ export default function HistoryPage() {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-semibold text-white">History</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Earnings trends and analysis history by company
-        </p>
+        <p className="text-sm text-gray-400 mt-1">Earnings trends and analysis history by company</p>
       </div>
 
       {loading ? (
@@ -60,11 +55,9 @@ export default function HistoryPage() {
       ) : watchlist.length === 0 ? (
         <div className="card p-12 text-center text-gray-400">
           <p className="text-lg">No companies on your watchlist yet.</p>
-          <p className="text-sm mt-2">Add tickers on the Watchlist tab to start tracking history.</p>
         </div>
       ) : (
         <div className="flex gap-6 flex-col lg:flex-row">
-          {/* Ticker selector */}
           <aside className="lg:w-48 flex-shrink-0">
             <div className="card p-2 space-y-0.5">
               {watchlist.map((item) => (
@@ -85,8 +78,6 @@ export default function HistoryPage() {
               ))}
             </div>
           </aside>
-
-          {/* History content */}
           <div className="flex-1 min-w-0">
             {selectedTicker && (
               <HistoryTimeline

@@ -20,7 +20,7 @@
 
 ## Demo
 
-▶️ Click the thumbnail below to watch the full demo on YouTube.
+▶️ Click the image below to watch the full demo
 
 [![EarningsEdge Demo](https://img.youtube.com/vi/uHBrSiSeixg/maxresdefault.jpg)](https://www.youtube.com/watch?v=uHBrSiSeixg)
 

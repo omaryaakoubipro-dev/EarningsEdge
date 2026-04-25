@@ -1,6 +1,6 @@
 # EarningsEdge
 
-**AI-powered earnings intelligence.** Monitor quarterly earnings releases for your stock watchlist, receive automated AI analysis, and get instant Telegram notifications — all in one clean financial dashboard.
+**Autonomous AI agent.** Monitor quarterly earnings releases for your stock watchlist, receive automated AI analysis, and get instant Telegram notifications — all in one clean financial dashboard.
 
 ---
 

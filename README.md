@@ -18,9 +18,9 @@
 
 ---
 
-## Screenshots
+## Demo
 
-> Add screenshots to `/public/screenshots/` and link them here.
+[![EarningsEdge Demo](https://img.youtube.com/vi/uHBrSiSeixg/maxresdefault.jpg)](https://www.youtube.com/watch?v=uHBrSiSeixg)
 
 ---
 
